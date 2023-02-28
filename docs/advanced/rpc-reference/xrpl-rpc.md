@@ -64,5 +64,51 @@ This method is used to sign and send a transaction to the XRP Ledger. The basis 
 }
 ```
 
+## xrpl_signTransaction
+
+This method is used to sign a transaction to later be submitted to the XRPL. The basis of a transaction is defined by the [XRPL Transaction Common Fields][], it defines the properties that are available to all transaction types. The actual transactions that are supported on the XRPL can be found [here][XRPL Transaction Types]. It is expected that the parameters that are defined as `Required`, but not `auto-fillable` are provided by the dapp to the wallet. When signing a transaction that are to be submitted at a later point in time, it is strongly recommended to use the [tickets][XRPL Ticket Amendment] feature.
+
+
+### Parameters
+1. `Object` - The [transaction][XRPL Transaction Types] to be executed.
+
+### Returns
+1. `Object` - [Signed Transaction Blob][XRPL Signed Transaction]
+
+### Example
+
+```javascript
+// Request
+{
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "xrpl_sendTransaction",
+    "params": {
+        "TransactionType": "OfferCreate",
+        "Account": "rMBzp8CgpE441cp5PVyA9rpVV7oT8hP3ys",
+        "Fee": "10",
+        "Flags": 524288,
+        "LastLedgerSequence": 7108682,
+        "Sequence": 8,
+        "TakerGets": "15000000000",
+        "TakerPays": {
+            "currency": "USD",
+            "issuer": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
+            "value": "7072.8"
+        }
+    }
+}
+// Result
+{
+    "id": 1,
+    "jsonrpc": "2.0",
+    "result": {
+        "tx_blob": "120000240000000461D4838D7EA4C6800000000000000000000000000055534400000000004B4E9C06F24296074F7BC48F92A97916C6DC5EA968400000000000000F732103AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB74483046022100982064CDD3F052D22788DB30B52EEA8956A32A51375E72274E417328EBA31E480221008F522C9DB4B0F31E695AA013843958A10DE8F6BA7D6759BEE645F71A7EB240BE81144B4E9C06F24296074F7BC48F92A97916C6DC5EA983143E9D4A2B8AA0780F682D136F7A56D6724EF53754"
+    }
+}
+```
+
 [XRPL Transaction Common Fields]: https://xrpl.org/transaction-common-fields.html
 [XRPL Transaction Types]: https://xrpl.org/transaction-types.html
+[XRPL Ticket Amendment]: https://xrpl.org/tickets.html
+[XRPL Signed Transaction]: https://xrpl.org/transaction-basics.html#example-signed-transaction-blob

@@ -191,50 +191,10 @@ The example below specifies a multi-signed payment transaction, already signed (
 }
 ```
 
-## xrpl_getAccounts
-
-This method returns an array of accounts and public keys available to sign from the wallet. Dapps typically only need the `SigningPubKey` when preparing multi-signed transactions or transactions to be signed using an assigned [regular key][XRPL Regular Key].
-
-### Parameters
-None
-
-### Returns
-* `Array` - Array of accounts:
-	* `Object` - Account data object with parameters:
-		* `Type` : `String` - Type of account and [algorithm][XRPL Algorithms] used for signing, either `secp256k1` or `ed25519`.
-		* `Account` : `String` - XRP Ledger address
-		* `SigningPubKey` : `String` - Corresponding public key for the `Account`
-
-### Example
-
-```javascript
-// Request
-{
-    "id": 1,
-    "jsonrpc": "2.0",
-    "method": "xrpl_getAccounts",
-    "params": {}
-}
-
-// Result
-{
-    "id": 1,
-    "jsonrpc": "2.0",
-    "result":  [
-        {
-            "Type": "secp256k1",
-            "Account": "rMBzp8CgpE441cp5PVyA9rpVV7oT8hP3ys",
-            "SigningPubKey": "03EE83BB432547885C219634A1BC407A9DB0474145D69737D09CCDC63E1DEE7FE3"
-        }
-    ]
-}
-```
-
 [XRPL Transaction Common Fields]: https://xrpl.org/transaction-common-fields.html
 [XRPL Transaction Types]: https://xrpl.org/transaction-types.html
 [XRPL Signed Transaction]: https://xrpl.org/transaction-basics.html#example-signed-transaction-blob
 [XRPL Serialization]: https://xrpl.org/serialization.html#examples
 [XRPL Algorithms]: https://xrpl.org/cryptographic-keys.html#signing-algorithms
-[XRPL Regular Key]: https://xrpl.org/cryptographic-keys.html#regular-key-pair
 [XRPL Multisign]: https://xrpl.org/multi-signing.html#multi-signing
 [XRPL Multisign Methods]: https://xrpl.org/send-a-multi-signed-transaction.html#3-get-additional-signatures

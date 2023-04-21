@@ -18,8 +18,7 @@ Please note that if you set `submit` to `false`, your dapp will need to encode t
 
 ### Returns
 * `Object` 
-    * `status` : `String` - Contains `success` if no errors were encountered, otherwise an error code.
-    * `tx_json` : `Object` - JSON specification of the complete transaction as signed, including any fields that were automatically filled in.
+    * `tx_json` : `Object` - JSON specification of the complete transaction as signed, including any fields that were auto-filled.
 
 ### Example
 The example below specifies a simple DEX order for selling 15,000 XRP in exchange for 7,072.8 USD.
@@ -36,6 +35,7 @@ The example below specifies a simple DEX order for selling 15,000 XRP in exchang
             "Account": "rMBzp8CgpE441cp5PVyA9rpVV7oT8hP3ys",
             "Flags": 524288,
             "LastLedgerSequence": 7108682,
+            "Expiration": 595640108,
             "TakerGets": "15000000000",
             "TakerPays": {
                 "currency": "USD",
@@ -51,7 +51,6 @@ The example below specifies a simple DEX order for selling 15,000 XRP in exchang
     "id": 1,
     "jsonrpc": "2.0",
     "result": {
-        "status": "success",
         "tx_json": {
             "Account": "rMBzp8CgpE441cp5PVyA9rpVV7oT8hP3ys",
             "Expiration": 595640108,
@@ -90,8 +89,7 @@ Please note that `autofill` and `submit` both defaults to `false`, since explici
 
 ### Returns
 * `Object` 
-    * `status` : `String` - Contains `success` if no errors were encountered, otherwise an error code.
-    * `tx_json` : `Object` - JSON specification of the complete transaction as signed, including any fields that were automatically filled in.
+    * `tx_json` : `Object` - JSON specification of the complete transaction as signed, including any fields that were auto-filled.
 
 ### Example
 The example below specifies a multi-signed payment transaction, already signed ([in serial][XRPL Multisign Methods]) by 3 of 4 required signers. Since only one more signature is required, the optional `submit` parameter has been set to `true`.
@@ -147,7 +145,6 @@ The example below specifies a multi-signed payment transaction, already signed (
     "id": 1,
     "jsonrpc": "2.0",
     "result": {
-        "status": "success",
         "tx_json": {
             "Account": "rh2EsAe2xVE71ZBjx7oEL2zpD4zmSs3sY9",
             "TransactionType": "Payment",

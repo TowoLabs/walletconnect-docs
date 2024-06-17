@@ -12,11 +12,11 @@ This method is used to sign and submit a transfer of any `amount` of Bitcoin to 
 * `Object`
     * `recipient` : `String` - _(Required)_ The recipient's public address.
     * `amount` : `String` - _(Required)_ Positive amount of Bitcoin to send, denominated in satoshis (Bitcoin base unit).
-    * `memo` : `String` - _(Optional)_ Hex string without 0x prefix, maximum 40 characters and will be sent as the OP_RETURN value.
+    * `memo` : `String` - _(Optional)_ The OP_RETURN value as a hex string without 0x prefix, maximum 40 characters.
 
 ### Returns
 * `Object` 
-    * `tx_id` : `String` - The transaction id as a hex-encoded string.
+    * `tx_id` : `String` - The transaction id as a hex string without 0x prefix.
 
 ### Example
 The example below specifies a simple transfer of 1.23 BTC (123000000 Satoshi).

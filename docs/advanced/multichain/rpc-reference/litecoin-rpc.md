@@ -43,3 +43,39 @@ The example below specifies a simple transfer of 1.23 LTC (123000000 Litoshi).
     }
 }
 ```
+
+## litecoin_getBalance
+
+This method is used to find the total and spendable balance for a Litecoin wallet. The spendable balance should be calculated as the total balance minus an estimated on-chain fee. The estimated on-chain fee can be calculated from a theoretical transaction spending all the user's UTXOs as inputs and generating two outputs.
+
+### Parameters
+* `Object`
+    * No parameters.
+
+### Returns
+* `Object` 
+    * `totalBalance` : `String` - The sum of all UTXOs amounts, denominated in litoshis.
+    * `spendableBalance` : `String` - The sum of all UTXOs minus an estimated on-chain fee, denominated in litohis.
+
+### Example
+The example below specifies a request to fetch the user's balance.
+
+```javascript
+// Request
+{
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "litecoin_getBalance",
+    "params": {}
+}
+
+// Result
+{
+    "id": 1,
+    "jsonrpc": "2.0",
+    "result": {
+        "totalBalance": "245000000",
+        "spendableBalance": "244998500"
+    }
+}
+```

@@ -55,7 +55,7 @@ This method is used to find the total and spendable balance for a Litecoin walle
 ### Returns
 * `Object` 
     * `totalBalance` : `String` - The sum of all UTXOs amounts, denominated in litoshis.
-    * `spendableBalance` : `String` - The sum of all UTXOs minus an estimated on-chain fee, denominated in litohis.
+    * `spendableBalance` : `String` - The sum of all UTXOs minus an estimated on-chain fee, denominated in litoshis.
 
 ### Example
 The example below specifies a request to fetch the user's balance.

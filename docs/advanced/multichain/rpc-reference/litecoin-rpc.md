@@ -4,7 +4,7 @@ description: Litecoin JSON-RPC Methods
 
 # Litecoin
 
-## litecoin_sendTransfer
+## sendTransfer
 
 This method is used to sign and submit a transfer of any `amount` of Litecoin to a single `recipient`, optionally including a `memo` set as the OP_RETURN value by supporting wallets. The transaction will be signed and broadcasted upon user approval. 
 
@@ -26,7 +26,7 @@ The example below specifies a simple transfer of 1.23 LTC (123000000 Litoshi).
 {
     "id": 1,
     "jsonrpc": "2.0",
-    "method": "litecoin_sendTransfer",
+    "method": "sendTransfer",
     "params": {
         "recipient": "ltc1q8c6fshw2dlwun7ekn9qwf37cu2rn755u9ym7p0",
         "amount": "123000000",
@@ -44,7 +44,7 @@ The example below specifies a simple transfer of 1.23 LTC (123000000 Litoshi).
 }
 ```
 
-## litecoin_getBalance
+## getBalance
 
 This method is used to find the total and spendable balance for a Litecoin wallet. The spendable balance should be calculated as the total balance minus an estimated on-chain fee. The estimated on-chain fee can be calculated from a theoretical transaction spending all the user's UTXOs as inputs and generating two outputs.
 
@@ -65,7 +65,7 @@ The example below specifies a request to fetch the user's balance.
 {
     "id": 1,
     "jsonrpc": "2.0",
-    "method": "litecoin_getBalance",
+    "method": "getBalance",
     "params": {}
 }
 

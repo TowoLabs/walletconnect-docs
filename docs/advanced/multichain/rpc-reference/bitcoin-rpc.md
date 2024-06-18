@@ -4,7 +4,7 @@ description: Bitcoin JSON-RPC Methods
 
 # Bitcoin
 
-## bitcoin_sendTransfer
+## sendTransfer
 
 This method is used to sign and submit a transfer of any `amount` of Bitcoin to a single `recipient`, optionally including a `memo` set as the OP_RETURN value by supporting wallets. The transaction will be signed and broadcasted upon user approval. 
 
@@ -26,7 +26,7 @@ The example below specifies a simple transfer of 1.23 BTC (123000000 Satoshi).
 {
     "id": 1,
     "jsonrpc": "2.0",
-    "method": "bitcoin_sendTransfer",
+    "method": "sendTransfer",
     "params": {
         "recipient": "bc1qwz2lhc40s8ty3l5jg3plpve3y3l82x9l42q7fk",
         "amount": "123000000",
@@ -44,7 +44,7 @@ The example below specifies a simple transfer of 1.23 BTC (123000000 Satoshi).
 }
 ```
 
-## bitcoin_getBalance
+## getBalance
 
 This method is used to find the total and spendable balance for a Bitcoin wallet. The spendable balance should be calculated as the total balance minus an estimated on-chain fee. The estimated on-chain fee can be calculated from a theoretical transaction spending all the user's UTXOs as inputs and generating two outputs.
 
@@ -65,7 +65,7 @@ The example below specifies a request to fetch the user's balance.
 {
     "id": 1,
     "jsonrpc": "2.0",
-    "method": "bitcoin_getBalance",
+    "method": "getBalance",
     "params": {}
 }
 

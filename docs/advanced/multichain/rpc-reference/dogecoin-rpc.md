@@ -4,7 +4,7 @@ description: Dogecoin JSON-RPC Methods
 
 # Dogecoin
 
-## dogecoin_sendTransfer
+## sendTransfer
 
 This method is used to sign and submit a transfer of any `amount` of Dogecoin to a single `recipient`, optionally including a `memo` set as the OP_RETURN value by supporting wallets. The transaction will be signed and broadcasted upon user approval. 
 
@@ -26,7 +26,7 @@ The example below specifies a simple transfer of 1.23 DOGE (123000000 Satoshi).
 {
     "id": 1,
     "jsonrpc": "2.0",
-    "method": "dogecoin_sendTransfer",
+    "method": "sendTransfer",
     "params": {
         "recipient": "DBcZSePDaMMduBMLymWHXhkE5ArFEvkagU",
         "amount": "123000000",
@@ -45,7 +45,7 @@ The example below specifies a simple transfer of 1.23 DOGE (123000000 Satoshi).
 ```
 
 
-## dogecoin_getBalance
+## getBalance
 
 This method is used to find the total and spendable balance for a Dogecoin wallet. The spendable balance should be calculated as the total balance minus an estimated on-chain fee. The estimated on-chain fee can be calculated from a theoretical transaction spending all the user's UTXOs as inputs and generating two outputs.
 
@@ -66,7 +66,7 @@ The example below specifies a request to fetch the user's balance.
 {
     "id": 1,
     "jsonrpc": "2.0",
-    "method": "dogecoin_getBalance",
+    "method": "getBalance",
     "params": {}
 }
 

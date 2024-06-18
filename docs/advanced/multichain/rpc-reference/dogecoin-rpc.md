@@ -22,7 +22,7 @@ This method is used to sign and submit a transfer of any `amount` of Dogecoin to
 The example below specifies a simple transfer of 1.23 DOGE (123000000 Satoshi).
 
 ```javascript
-/// Request
+// Request
 {
     "id": 1,
     "jsonrpc": "2.0",

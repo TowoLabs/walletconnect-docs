@@ -41,7 +41,7 @@ This method is used to sign and submit a transfer of any `amount` of Bitcoin to 
 
 ### Returns
 * `Object` 
-    * `tx_id` : `String` - The transaction id as a hex string without 0x prefix.
+    * `tx_id` : `String` - _(Required)_ The transaction id as a hex string without 0x prefix.
 
 ### Example
 The example below specifies a simple transfer of 1.23 BTC (123000000 Satoshi).
@@ -71,7 +71,7 @@ The example below specifies a simple transfer of 1.23 BTC (123000000 Satoshi).
 ```
 
 ## getAccountAddresses
-This method is used to find all addresses with unspent transaction outputs (UTXOs), as well as receive and change addresses to monitor for balance changes. No response can be expected until the user unlocks its wallet and approves the request. Dapps will typically use an indexing service to query for balances and UTXOs for all addresses returned by this method:
+This method is used to find all addresses with unspent transaction outputs (UTXOs), as well as unused receive and change addresses to monitor for balance changes. No response can be expected until the user unlocks its wallet and approves the request. Dapps will typically use an indexing service to query for balances and UTXOs for all addresses returned by this method:
 * [Blockbook API](https://github.com/trezor/blockbook/blob/master/docs/api.md#get-address)
 * [Bitcore API](https://github.com/bitpay/bitcore/blob/master/packages/bitcore-node/docs/api-documentation.md#address)
 
@@ -84,16 +84,20 @@ We recognize that there are two different kinds of wallets:
     * `connectedAccount` : `String` - _(Required)_ The connected account's first external address.
 
 ### Returns
-* `Object` 
-    * `utxoAddresses`: `Array` - Addresses with at least one UTXO, including unconfirmed ones. Empty array if no UTXOs.
-    * `receiveAddresses`: `Array` - External addresses to receive Bitcoin from others.
-    * `changeAddresses`: `Array` - Internal addresses to receive Bitcoin from self.
+* `Array`
+    * `Object`
+        * `address`: `String` - _(Required)_ An unused address or with at least one UTXO.
+        * `publicKey`: `String` - _(Optional)_ The public key for the derivation path.
+        * `path`: `String` - _(Optional)_ Derivation path of the address e.g. "84'/0'/0'/0/0".
+        * `intention`: `ordinal | payment` - _(Optional)_ The intention of the address.
 
-Dynamic wallets **should** include minimum 2 and maximum 5 unused addresses in `receiveAddresses` and `changeAddresses` respectively. By returning fewer addresses the user experience worsens as [getAccountAddresses](#getAccountAddresses) must be called more often. By returning more addresses, dapps potentially monitor and learn about future transactions. Wallets **must** never return more than 20 unused addresses to avoid breaking the [gap limit](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit).
+Wallets **must** return all addresses with UTXOs. Wallets **must** never return more than 20 unused addresses to avoid breaking the [gap limit](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit).
+
+Dynamic wallets **should** include minimum 2 and maximum 5 unused change and receive addresses respectively. By returning fewer addresses the user experience worsens as [getAccountAddresses](#getAccountAddresses) must be called more often. By returning more addresses, dapps potentially monitor and learn about future transactions. 
 
 ### Example: Dynamic Wallet
 
-The example below specifies a result from a dynamic wallet. Only unused `receiveAddresses` and `changeAddresses` are returned.
+The example below specifies a result from a dynamic wallet. For the sake of this example, receive and change addresses index 3-4 are considered unused and addresses with paths 44'/0'/0'/0/7 and 84'/0'/0'/0/2 are considered to have UTXOs.
 
 ```javascript
 // Request
@@ -110,29 +114,44 @@ The example below specifies a result from a dynamic wallet. Only unused `receive
 {
     "id": 1,
     "jsonrpc": "2.0",
-    "result": {
-        "utxoAddresses": [
-            "bc1q8c6fshw2dlwun7ekn9qwf37cu2rn755upcp6el",
-            "1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA"
-        ],
-        "receiveAddresses": [
-            "bc1qgl5vlg0zdl7yvprgxj9fevsc6q6x5dmcyk3cn3",
-            "bc1qm97vqzgj934vnaq9s53ynkyf9dgr05rargr04n",
-            "bc1qnpzzqjzet8gd5gl8l6gzhuc4s9xv0djt0rlu7a"
-        ],
-        "changeAddresses": [
-            "bc1qv6vaedpeke2lxr3q0wek8dd7nzhut9w0eqkz9z",
-            "bc1qetrkzfslk0d4kqjnu29fdh04tkav9vj3k36vuh",
-            "bc1qu3936zt3c42xdz94752q07jg8656gfeh3agj6j"
-        ]
-    }
+    "result": [
+        {
+            "address": "3AVrVAjBZkaZ6wiamSaNc1AfwVzwTuapfn",
+            "publicKey": "03fb1028219f016fe2cdd1707b356f5be7e9ac449ed01ee8e651c47e5ca8c9c326",
+            "path": "44'/0'/0'/0/7"
+        },
+        {
+            "address": "bc1qp59yckz4ae5c4efgw2s5wfyvrz0ala7rgvuz8z",
+            "publicKey": "038ffea936b2df76bf31220ebd56a34b30c6b86f40d3bd92664e2f5f98488dddfa",
+            "path": "84'/0'/0'/0/2"
+        },
+        {
+            "address": "bc1qgl5vlg0zdl7yvprgxj9fevsc6q6x5dmcyk3cn3",
+            "publicKey": "03de7490bcca92a2fb57d782c3fd60548ce3a842cad6f3a8d4e76d1f2ff7fcdb89",
+            "path": "84'/0'/0'/0/3"
+        },
+        {
+            "address": "bc1qm97vqzgj934vnaq9s53ynkyf9dgr05rargr04n",
+            "publicKey": "03995137c8eb3b223c904259e9b571a8939a0ec99b0717684c3936407ca8538c1b",
+            "path": "84'/0'/0'/0/4"
+        },
+        {
+            "address": "bc1qv6vaedpeke2lxr3q0wek8dd7nzhut9w0eqkz9z",
+            "publicKey": "03d0d243b6a3176fa20fa95cd7fb0e8e0829b83fc2b52053633d088c1a4ba91edf",
+            "path": "84'/0'/0'/1/3"
+        },
+        {
+            "address": "bc1qetrkzfslk0d4kqjnu29fdh04tkav9vj3k36vuh",
+            "publicKey": "02a8dee7573bcc7d3c1e9b9e267dbf0cd717343c31d322c5b074a3a97090a0d952",
+            "path": "84'/0'/0'/1/4"
+        }
+    ]
 }
 ```
-Assuming the dapp monitors all returned addresses for balance changes, a new request to `getAccountAddresses` is only needed when all UTXOs have been spent, all `receiveAddresses` or all `changeAddresses` have been used.
+Assuming the dapp monitors all returned addresses for balance changes, a new request to `getAccountAddresses` is only needed when all UTXOs have been spent, all unused receive or all unused change addresses have been used.
 
 ### Example: Static Wallet
-
-The example below specifies a response from a static wallet. The `connectedAccount` address is returned as the only address in `receiveAddresses` and `changeAddresses`. Any UTXO belongs to the `connectedAccount` address.
+The example below specifies a response from a static wallet. The `connectedAccount` address is the only returned address and used for both change and receiving. Any UTXO belongs to the `connectedAccount` address.
 
 ```javascript
 // Request
@@ -149,22 +168,22 @@ The example below specifies a response from a static wallet. The `connectedAccou
 {
     "id": 1,
     "jsonrpc": "2.0",
-    "result": {
-        "utxoAddresses": [
-            "bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu"
-        ],
-        "receiveAddresses": [
-            "bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu"
-        ],
-        "changeAddresses": [
-            "bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu"
-        ]
-    }
+    "result": [
+        {
+            "address": "bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu",
+            "publicKey": "0330d54fd0dd420a6e5f8d3624f5f3482cae350f79d5f0753bf5beef9c2d91af3c",
+            "path": "84'/0'/0'/0/0"
+        }
+    ]
 }
 ```
 Assuming the only returned address is the `connectedAccount` address, no new request to `getAccountAddresses` is needed. Dapps only need to monitor the balance and UTXOs of the `connectedAccount` address for static wallets.
 
 ## signPsbt
 This method is for use-cases requiring granular control over what UTXOs to spend or requiring more than a single recipient, change or OP_RETURN output.
+
+**TBD**
+
+## signMessage
 
 **TBD**

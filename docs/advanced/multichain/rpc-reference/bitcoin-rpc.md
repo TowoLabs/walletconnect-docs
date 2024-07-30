@@ -82,18 +82,18 @@ We recognize that there are two different kinds of wallets:
 ### Parameters
 * `Object`
     * `account` : `String` - _(Required)_ The connected account's first external address.
-    * `includeAddresses` : `String[]` - _(Optional)_ Include certain additional addresses, even if they have no UTXOs or have already been used.
-    * `intentions` : `String[]` - _(Optional)_ Filter what addresses to return, e.g. payments or ordinals.
+    * `includeAddresses` : `String[]` - _(Optional)_ Include additional addresses, even if they have no UTXOs or have already been used.
+    * `intentions` : `String[]` - _(Optional)_ Filter what addresses to return, e.g. just for "payments" or "ordinals".
 
 ### Returns
 * `Array`
     * `Object`
-        * `address` : `String` - _(Required)_ An unused address or with at least one UTXO.
+        * `address` : `String` - _(Required)_ A public address.
         * `publicKey` : `String` - _(Optional)_ The public key for the derivation path.
         * `path` : `String` - _(Optional)_ Derivation path of the address e.g. "m/84'/0'/0'/0/0".
         * `intention`: `String` - _(Optional)_ The intention of the address.
 
-Wallets **should** always include the first external address and all addresses with one or more UTXOs, assuming that no `intentions` were specified.
+Wallets **should** always include the account address and addresses with one or more UTXOs, assuming that no `intentions` were specified.
 
 Wallets **must** never return more than 20 unused addresses to avoid breaking the [gap limit](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit).
 

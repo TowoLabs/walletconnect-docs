@@ -90,7 +90,7 @@ We recognize that there are two different kinds of wallets:
     * `Object`
         * `address` : `String` - _(Required)_ An unused address or with at least one UTXO.
         * `publicKey` : `String` - _(Optional)_ The public key for the derivation path.
-        * `path` : `String` - _(Optional)_ Derivation path of the address e.g. "84'/0'/0'/0/0".
+        * `path` : `String` - _(Optional)_ Derivation path of the address e.g. "m/84'/0'/0'/0/0".
         * `intention`: `String` - _(Optional)_ The intention of the address.
 
 Wallets **should** always include the first external address and all addresses with one or more UTXOs, assuming that no `intentions` were specified.

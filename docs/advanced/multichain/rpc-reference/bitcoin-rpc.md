@@ -88,7 +88,7 @@ We recognize that there are two different kinds of wallets:
 ### Returns
 * `Array`
     * `Object`
-        * `address` : `String` - _(Required)_ A public address.
+        * `address` : `String` - _(Required)_ A public address belonging to the account.
         * `publicKey` : `String` - _(Optional)_ The public key for the derivation path.
         * `path` : `String` - _(Optional)_ Derivation path of the address e.g. "m/84'/0'/0'/0/0".
         * `intention`: `String` - _(Optional)_ The intention of the address.

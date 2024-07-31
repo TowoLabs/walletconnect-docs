@@ -71,7 +71,7 @@ The example below specifies a simple transfer of 1.23 BTC (123000000 Satoshi).
 ```
 
 ## getAccountAddresses
-This method is used to find all addresses with unspent transaction outputs (UTXOs), as well as unused receive and change addresses to monitor for balance changes. No response can be expected until the user unlocks its wallet and approves the request. Dapps will typically use an indexing service to query for balances and UTXOs for all addresses returned by this method:
+This method returns all addresses needed for a dapp to fetch all UTXOs, calculate the total balance and prepare transactions. No response can be expected until the user unlocks its wallet and approves the request. Dapps will typically use an indexing service to query for balances and UTXOs for all addresses returned by this method:
 * [Blockbook API](https://github.com/trezor/blockbook/blob/master/docs/api.md#get-address)
 * [Bitcore API](https://github.com/bitpay/bitcore/blob/master/packages/bitcore-node/docs/api-documentation.md#address)
 
@@ -82,25 +82,27 @@ We recognize that there are two different kinds of wallets:
 ### Parameters
 * `Object`
     * `account` : `String` - _(Required)_ The connected account's first external address.
-    * `includeAddresses` : `String[]` - _(Optional)_ Include specific addresses, even if they have previous activity or no UTXOs.
-    * `intentions` : `String[]` - _(Optional)_ Filter what addresses to return, e.g. just for "payments" or "ordinals".
+    * `includeAddresses` : `String[]` - _(Optional)_ Include certain additional addresses, regardless of balance or previous use.
+    * `intentions` : `String[]` - _(Optional)_ Filter what addresses to return, e.g. "payments", "change" or "ordinals".
 
 ### Returns
 * `Array`
     * `Object`
-        * `address` : `String` - _(Required)_ A public address belonging to the account.
-        * `publicKey` : `String` - _(Optional)_ The public key for the derivation path.
+        * `address` : `String` - _(Required)_ Public address belonging to the account.
+        * `publicKey` : `String` - _(Optional)_ Public key for the derivation path.
         * `path` : `String` - _(Optional)_ Derivation path of the address e.g. "m/84'/0'/0'/0/0".
-        * `intention`: `String` - _(Optional)_ The intention of the address.
+        * `intention`: `String` - _(Optional)_ Intention of the address, e.g. "payments", "change" or "ordinals".
 
-Wallets **should** always include the account address and addresses with one or more UTXOs, assuming that no `intentions` were specified.
+Wallets **should** always include the first external address and all addresses with one or more UTXOs, unless they're filtered by `intentions`.
+
+Dynamic wallets **should** include minimum 2 unused change and receive addresses. Otherwise dapps may have to request [getAccountAddresses](#getAccountAddresses) after every transaction to discover the new addresses and keep track of the user's total balance.
 
 Wallets **must** never return more than 20 unused addresses to avoid breaking the [gap limit](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit).
 
-Dynamic wallets **should** include minimum 2 and maximum 5 unused change and receive addresses respectively. By returning fewer addresses the user experience worsens as [getAccountAddresses](#getAccountAddresses) must be called more often. By returning more addresses, dapps potentially monitor and learn about future transactions. 
-
 ### Example: Dynamic Wallet
-The example below specifies a result from a dynamic wallet. For the sake of this example, receive and change addresses with index 3-4 are considered unused and addresses with paths m/44'/0'/0'/0/7 and m/84'/0'/0'/0/2 are considered to have UTXOs.
+The example below specifies a result from a dynamic wallet. For the sake of this example, receive and change addresses with index 3-4 are considered unused and addresses with paths m/49'/0'/0'/0/7 and m/84'/0'/0'/0/2 are considered to have UTXOs.
+
+Assuming the dapp monitors all returned addresses for balance changes, a new request to `getAccountAddresses` is only needed when all UTXOs have been spent, all unused receive or all unused change addresses have been used.
 
 ```javascript
 // Request
@@ -124,9 +126,9 @@ The example below specifies a result from a dynamic wallet. For the sake of this
             "path": "m/84'/0'/0'/0/0"
         },
         {
-            "address": "3AVrVAjBZkaZ6wiamSaNc1AfwVzwTuapfn",
-            "publicKey": "03fb1028219f016fe2cdd1707b356f5be7e9ac449ed01ee8e651c47e5ca8c9c326",
-            "path": "m/44'/0'/0'/0/7"
+            "address": "3KHhcgwPgYF9hE77zaKy2G36dpkcNtvQ33",
+            "publicKey": "03b90230ca20150142bc2849a3df4517073978f32466214a0ebc00cac52f996989",
+            "path": "m/49'/0'/0'/0/7"
         },
         {
             "address": "bc1qp59yckz4ae5c4efgw2s5wfyvrz0ala7rgvuz8z",
@@ -156,10 +158,9 @@ The example below specifies a result from a dynamic wallet. For the sake of this
     ]
 }
 ```
-Assuming the dapp monitors all returned addresses for balance changes, a new request to `getAccountAddresses` is only needed when all UTXOs have been spent, all unused receive or all unused change addresses have been used.
 
 ### Example: Static Wallet
-The example below specifies a response from a static wallet. The `account` address is the only returned address and used for both change and receiving. Any UTXO belongs to the `account` address.
+The example below specifies a response from a static wallet. The returned address is used for both change and payments. It's the only address with UTXOs.
 
 ```javascript
 // Request
@@ -185,7 +186,6 @@ The example below specifies a response from a static wallet. The `account` addre
     ]
 }
 ```
-Assuming the only returned address is the `account` address, no new request to `getAccountAddresses` is needed. Dapps only need to monitor the balance and UTXOs of the `account` address for static wallets.
 
 ## signPsbt
 This method is for use-cases requiring granular control over what UTXOs to spend or requiring more than a single recipient, change or OP_RETURN output.

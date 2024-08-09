@@ -33,7 +33,7 @@ This method is used to sign and submit a transfer of any `amount` of Litecoin to
 
 ### Parameters
 * `Object`
-    * `connectedAccount` : `String` - _(Required)_ The connected account's first external address.
+    * `account` : `String` - _(Required)_ The connected account's first external address.
     * `recipientAddress` : `String` - _(Required)_ The recipient's public address.
     * `amount` : `String` - _(Required)_ The amount of Litecoin to send, denominated in litoshis (Litecoin base unit).
     * `changeAddress` : `String` - _(Optional)_ The sender's public address to receive change.
@@ -41,7 +41,7 @@ This method is used to sign and submit a transfer of any `amount` of Litecoin to
 
 ### Returns
 * `Object` 
-    * `tx_id` : `String` - The transaction id as a hex string without 0x prefix.
+    * `txid` : `String` - The transaction id as a hex string without 0x prefix.
 
 ### Example
 The example below specifies a simple transfer of 1.23 LTC (123000000 Litoshi).
@@ -53,7 +53,7 @@ The example below specifies a simple transfer of 1.23 LTC (123000000 Litoshi).
     "jsonrpc": "2.0",
     "method": "sendTransfer",
     "params": {
-        "connectedAccount": "ltc1q8c6fshw2dlwun7ekn9qwf37cu2rn755u9ym7p0",
+        "account": "ltc1q8c6fshw2dlwun7ekn9qwf37cu2rn755u9ym7p0",
         "recipient": "ltc1qn9h77dt0s6ar78ptxq58t2ne7tyhvfnruc3e7d",
         "amount": "123000000",
         "memo": "636861726c6579206c6f766573206865"
@@ -65,13 +65,13 @@ The example below specifies a simple transfer of 1.23 LTC (123000000 Litoshi).
     "id": 1,
     "jsonrpc": "2.0",
     "result": {
-        "tx_id": "f007551f169722ce74104d6673bd46ce193c624b8550889526d1b93820d725f7"
+        "txid": "f007551f169722ce74104d6673bd46ce193c624b8550889526d1b93820d725f7"
     }
 }
 ```
 
 ## getAccountAddresses
-This method is used to find all addresses with unspent transaction outputs (UTXOs), as well as receive and change addresses to monitor for balance changes. No response can be expected until the user unlocks its wallet and approves the request. Dapps will typically use an indexing service to query for balances and UTXOs for all addresses returned by this method:
+This method returns all current addresses needed for a dapp to fetch all UTXOs, calculate the total balance and prepare transactions. No response can be expected until the user unlocks its wallet and approves the request. Dapps will typically use an indexing service to query for balances and UTXOs for all addresses returned by this method:
 * [Blockbook API](https://github.com/trezor/blockbook/blob/master/docs/api.md#get-address)
 * [Bitcore API](https://github.com/bitpay/bitcore/blob/master/packages/bitcore-node/docs/api-documentation.md#address)
 
@@ -81,19 +81,28 @@ We recognize that there are two different kinds of wallets:
 
 ### Parameters
 * `Object`
-    * `connectedAccount` : `String` - _(Required)_ The connected account's first external address.
+    * `account` : `String` - _(Required)_ The connected account's first external address.
+    * `includeAddresses` : `String[]` - _(Optional)_ Include certain additional addresses, regardless of balance or previous use.
+    * `intentions` : `String[]` - _(Optional)_ Filter what addresses to return, e.g. "payment", "change" or "ordinal".
 
 ### Returns
-* `Object` 
-    * `utxoAddresses`: `Array` - Addresses with at least one UTXO, including unconfirmed ones. Empty array if no UTXOs.
-    * `receiveAddresses`: `Array` - External addresses to receive Litecoin from others.
-    * `changeAddresses`: `Array` - Internal addresses to receive Litecoin from self.
+* `Array`
+    * `Object`
+        * `address` : `String` - _(Required)_ Public address belonging to the account.
+        * `publicKey` : `String` - _(Optional)_ Public key for the derivation path in hex, without 0x prefix.
+        * `path` : `String` - _(Optional)_ Derivation path of the address e.g. "m/84'/2'/0'/0/0".
+        * `intention`: `String` - _(Optional)_ Intention of the address, e.g. "payment", "change" or "ordinal".
 
-Dynamic wallets **should** include minimum 2 and maximum 5 unused addresses in `receiveAddresses` and `changeAddresses` respectively. By returning fewer addresses the user experience worsens as [getAccountAddresses](#getAccountAddresses) must be called more often. By returning more addresses, dapps potentially monitor and learn about future transactions. Wallets **must** never return more than 20 unused addresses to avoid breaking the [gap limit](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit).
+Wallets **should** always include the first external address and all addresses with one or more UTXOs, unless they're filtered by `intentions`.
+
+Dynamic wallets **should** include minimum 2 unused change and receive addresses. Otherwise dapps may have to request [getAccountAddresses](#getAccountAddresses) after every transaction to discover the new addresses and keep track of the user's total balance.
+
+Wallets **must** never return more than 20 unused addresses to avoid breaking the [gap limit](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit).
 
 ### Example: Dynamic Wallet
+The example below specifies a result from a dynamic wallet. For the sake of this example, receive and change addresses with index 3-4 are considered unused and addresses with paths m/49'/2'/0'/0/7 and m/84'/2'/0'/0/2 are considered to have UTXOs.
 
-The example below specifies a result from a dynamic wallet. Only unused `receiveAddresses` and `changeAddresses` are returned.
+Assuming the dapp monitors all returned addresses for balance changes, a new request to `getAccountAddresses` is only needed when all UTXOs have been spent, all unused receive or all unused change addresses have been used.
 
 ```javascript
 // Request
@@ -102,7 +111,7 @@ The example below specifies a result from a dynamic wallet. Only unused `receive
     "jsonrpc": "2.0",
     "method": "getAccountAddresses",
     "params": {
-        "connectedAccount": "ltc1q8c6fshw2dlwun7ekn9qwf37cu2rn755u9ym7p0"
+        "account": "ltc1q8c6fshw2dlwun7ekn9qwf37cu2rn755u9ym7p0"
     }
 }
 
@@ -110,29 +119,41 @@ The example below specifies a result from a dynamic wallet. Only unused `receive
 {
     "id": 1,
     "jsonrpc": "2.0",
-    "result": {
-        "utxoAddresses": [
-            "ltc1qj4plcuyhuzw0sycf99gcayzhhcddfj6xkcke5g",
-            "LXkGhTKmZpviAtYdDaxWbiJsdg4tA6EzrU",
-        ],
-        "receiveAddresses": [
-            "ltc1qzngausxrx2degdl9epsvwdc3nskdzau72cc83x",
-            "ltc1qsdxa6pseqekqg5d3uksaxnwrey2s2ujcx03alc",
-            "ltc1qhuvt3sq8xmx9ktzdfznkzvjl5zup7mg9zpwllw"
-        ],
-        "changeAddresses": [
-            "ltc1q4c9qx28ex2n0cdphq0u0yvs2qjv6z0h7l6t450",
-            "ltc1qtjd3y5a2axpwzfjcj4y9zy50qfjuxwzm0vu5fq",
-            "ltc1qp7ujtprgl0quvcg0dj335p37r2mc2cxdc8xumq"
-        ]
-    }
+    "result": [
+        {
+            "address": "ltc1q8c6fshw2dlwun7ekn9qwf37cu2rn755u9ym7p0",
+            "path": "m/84'/2'/0'/0/0"
+        },
+        {
+            "address": "LXkGhTKmZpviAtYdDaxWbiJsdg4tA6EzrU",
+            "path": "m/49'/2'/0'/0/7"
+        },
+        {
+            "address": "ltc1qj4plcuyhuzw0sycf99gcayzhhcddfj6xkcke5g",
+            "path": "m/84'/2'/0'/0/2"
+        },
+        {
+            "address": "ltc1qsdxa6pseqekqg5d3uksaxnwrey2s2ujcx03alc",
+            "path": "m/84'/2'/0'/0/3"
+        },
+        {
+            "address": "ltc1qhuvt3sq8xmx9ktzdfznkzvjl5zup7mg9zpwllw",
+            "path": "m/84'/2'/0'/0/4"
+        },
+        {
+            "address": "ltc1qtjd3y5a2axpwzfjcj4y9zy50qfjuxwzm0vu5fq",
+            "path": "m/84'/2'/0'/1/3"
+        },
+        {
+            "address": "ltc1qp7ujtprgl0quvcg0dj335p37r2mc2cxdc8xumq",
+            "path": "m/84'/2'/0'/1/4"
+        }
+    ]
 }
 ```
-Assuming the dapp monitors all returned addresses for balance changes, a new request to `getAccountAddresses` is only needed when all UTXOs have been spent, all `receiveAddresses` or all `changeAddresses` have been used.
 
 ### Example: Static Wallet
-
-The example below specifies a response from a static wallet. The `connectedAccount` address is returned as the only address in `receiveAddresses` and `changeAddresses`. Any UTXO belongs to the `connectedAccount` address.
+The example below specifies a response from a static wallet. The returned address is used for both change and payments. It's the only address with UTXOs.
 
 ```javascript
 // Request
@@ -141,7 +162,7 @@ The example below specifies a response from a static wallet. The `connectedAccou
     "jsonrpc": "2.0",
     "method": "getAccountAddresses",
     "params": {
-        "connectedAccount": "ltc1q8c6fshw2dlwun7ekn9qwf37cu2rn755u9ym7p0"
+        "account": "ltc1q8c6fshw2dlwun7ekn9qwf37cu2rn755u9ym7p0"
     }
 }
 
@@ -149,22 +170,20 @@ The example below specifies a response from a static wallet. The `connectedAccou
 {
     "id": 1,
     "jsonrpc": "2.0",
-    "result": {
-        "utxoAddresses": [
-            "ltc1q8c6fshw2dlwun7ekn9qwf37cu2rn755u9ym7p0"
-        ],
-        "receiveAddresses": [
-            "ltc1q8c6fshw2dlwun7ekn9qwf37cu2rn755u9ym7p0"
-        ],
-        "changeAddresses": [
-            "ltc1q8c6fshw2dlwun7ekn9qwf37cu2rn755u9ym7p0"
-        ]
-    }
+    "result": [
+        {
+            "address": "ltc1q8c6fshw2dlwun7ekn9qwf37cu2rn755u9ym7p0",
+            "path": "m/84'/2'/0'/0/0"
+        }
+    ]
 }
 ```
-Assuming the only returned address is the `connectedAccount` address, no new request to `getAccountAddresses` is needed. Dapps only need to monitor the balance and UTXOs of the `connectedAccount` address for static wallets.
 
 ## signPsbt
 This method is for use-cases requiring granular control over what UTXOs to spend or requiring more than a single recipient, change or OP_RETURN output.
+
+**TBD**
+
+## signMessage
 
 **TBD**

@@ -71,7 +71,7 @@ The example below specifies a simple transfer of 1.23 BTC (123000000 Satoshi).
 ```
 
 ## getAccountAddresses
-This method returns all addresses needed for a dapp to fetch all UTXOs, calculate the total balance and prepare transactions. No response can be expected until the user unlocks its wallet and approves the request. Dapps will typically use an indexing service to query for balances and UTXOs for all addresses returned by this method:
+This method returns all current addresses needed for a dapp to fetch all UTXOs, calculate the total balance and prepare transactions. No response can be expected until the user unlocks its wallet and approves the request. Dapps will typically use an indexing service to query for balances and UTXOs for all addresses returned by this method:
 * [Blockbook API](https://github.com/trezor/blockbook/blob/master/docs/api.md#get-address)
 * [Bitcore API](https://github.com/bitpay/bitcore/blob/master/packages/bitcore-node/docs/api-documentation.md#address)
 
@@ -83,15 +83,15 @@ We recognize that there are two different kinds of wallets:
 * `Object`
     * `account` : `String` - _(Required)_ The connected account's first external address.
     * `includeAddresses` : `String[]` - _(Optional)_ Include certain additional addresses, regardless of balance or previous use.
-    * `intentions` : `String[]` - _(Optional)_ Filter what addresses to return, e.g. "payments", "change" or "ordinals".
+    * `intentions` : `String[]` - _(Optional)_ Filter what addresses to return, e.g. "payment", "change" or "ordinal".
 
 ### Returns
 * `Array`
     * `Object`
         * `address` : `String` - _(Required)_ Public address belonging to the account.
-        * `publicKey` : `String` - _(Optional)_ Public key for the derivation path.
+        * `publicKey` : `String` - _(Optional)_ Public key for the derivation path in hex, without 0x prefix.
         * `path` : `String` - _(Optional)_ Derivation path of the address e.g. "m/84'/0'/0'/0/0".
-        * `intention`: `String` - _(Optional)_ Intention of the address, e.g. "payments", "change" or "ordinals".
+        * `intention`: `String` - _(Optional)_ Intention of the address, e.g. "payment", "change" or "ordinal".
 
 Wallets **should** always include the first external address and all addresses with one or more UTXOs, unless they're filtered by `intentions`.
 

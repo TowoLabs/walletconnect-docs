@@ -14,7 +14,7 @@ const wagmiConfig = defaultWagmiConfig({
   /* highlight-add-start */
   auth: {
     email: true, // default to true
-    socials: ['google', 'x', 'github', 'discord', 'apple'],
+    socials: ['google', 'x', 'github', 'discord', 'apple', 'facebook', 'farcaster'],
     showWallets: true, // default to true
     walletFeatures: true // default to true
   }
@@ -43,7 +43,7 @@ const wagmiConfig = createConfig({
       options: { projectId },
       /* highlight-add-start */
       email: true, // default to true
-      socials: ['google', 'x', 'github', 'discord', 'apple'],
+      socials: ['google', 'x', 'github', 'discord', 'apple', 'facebook', 'farcaster'],
       showWallets: true, // default to true
       walletFeatures: true // default to true
       /* highlight-add-end */
@@ -63,7 +63,7 @@ const modal = createWeb3Modal({
     /* highlight-add-start */
     auth: {
       email: true, // default to true
-      socials: ['google', 'x', 'github', 'discord', 'apple'],
+      socials: ['google', 'x', 'github', 'discord', 'apple', 'facebook', 'farcaster'],
       showWallets: true, // default to true
       walletFeatures: true // default to true
     }
@@ -73,22 +73,26 @@ const modal = createWeb3Modal({
 })
 ```
 
+:::info
+
+AppKit with ethers v5 does not support the `auth` parameter and social logins. If you're using ethers v5, please consider upgrading to ethers v6 following this [ethers migration guide](https://docs.ethers.org/v6/migrating/) and [AppKit Docs](https://docs.walletconnect.com/appkit/overview)
+:::
 </PlatformTabItem>
 </PlatformTabs>
 
 ## Options
 
 - email [boolean]: This boolean defines whether you want to enable email login. Default `true`
-- socials [array]: This array contains the list of social platforms that you want to enable for user authentication. The platforms in the example include Google, X, GitHub, Discord, Apple and Facebook (coming soon). Default `undefined`
+- socials [array]: This array contains the list of social platforms that you want to enable for user authentication. The platforms in the example include Google, X, GitHub, Discord, Apple, Facebook and Farcaster. Default `undefined`
 - showWallets [boolean]: This boolean defines whether you want to show the wallet options on the first connect screen. If this is false and `socials` are enabled, it will show a button that directs you to a new screen displaying the wallet options. Default `true`
 - walletFeatures [boolean]: This boolean defines whether you want to enable wallet features. Wallet features allow users to view their balance, send, receive, and buy funds through a clear user interface. Default `true`
 
 ## User flow
 
-1. Users will be able to connect to you application by simply using an email address. Web3Modal will send to them a One Time Password (OTP) to copy and paste in the modal, which will help to
-   verify the user's authenticity. This will create a non-custodial wallet for your user which will be available in any application that integrates Web3Modal and email login.
+1. Users will be able to connect to you application by simply using an email address. AppKit will send to them a One Time Password (OTP) to copy and paste in the modal, which will help to
+   verify the user's authenticity. This will create a non-custodial wallet for your user which will be available in any application that integrates AppKit and email login.
 
-2. Eventually the user can optionally choose to move from a non-custodial wallet to a self-custodial one by pressing "Upgrade Wallet" on Web3Modal.
+2. Eventually the user can optionally choose to move from a non-custodial wallet to a self-custodial one by pressing "Upgrade Wallet" on AppKit.
    This will open the _([WalletConnect secure website](https://secure.walletconnect.com/dashboard))_ that will walk your user through the upgrading process.
 
 ## UI Variants

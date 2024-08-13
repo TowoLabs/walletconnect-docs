@@ -83,7 +83,7 @@ We recognize that there are two different kinds of wallets:
 * `Object`
     * `account` : `String` - _(Required)_ The connected account's first external address.
     * `includeAddresses` : `String[]` - _(Optional)_ Include certain additional addresses, regardless of balance or previous use.
-    * `intentions` : `String[]` - _(Optional)_ Filter what addresses to return, e.g. "payment", "change" or "ordinal".
+    * `intentions` : `String[]` - _(Optional)_ Filter what addresses to return, e.g. "payment" or "ordinal".
 
 ### Returns
 * `Array`
@@ -91,9 +91,11 @@ We recognize that there are two different kinds of wallets:
         * `address` : `String` - _(Required)_ Public address belonging to the account.
         * `publicKey` : `String` - _(Optional)_ Public key for the derivation path in hex, without 0x prefix.
         * `path` : `String` - _(Optional)_ Derivation path of the address e.g. "m/84'/2'/0'/0/0".
-        * `intention`: `String` - _(Optional)_ Intention of the address, e.g. "payment", "change" or "ordinal".
+        * `intention`: `String` - _(Optional)_ Intention of the address, e.g. "payment" or "ordinal".
 
 Wallets **should** always include the first external address and all addresses with one or more UTXOs, unless they're filtered by `intentions`.
+
+Wallets **should** emit a `bip122_addressesChanged` event for every account and BIP122 chain ID, after connection approval and when changes are detected. The event data should have the same format as the `getAccountAddresses` result.
 
 Dynamic wallets **should** include minimum 2 unused change and receive addresses. Otherwise dapps may have to request [getAccountAddresses](#getAccountAddresses) after every transaction to discover the new addresses and keep track of the user's total balance.
 

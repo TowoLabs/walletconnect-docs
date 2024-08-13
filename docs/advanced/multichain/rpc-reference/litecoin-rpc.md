@@ -82,7 +82,6 @@ We recognize that there are two different kinds of wallets:
 ### Parameters
 * `Object`
     * `account` : `String` - _(Required)_ The connected account's first external address.
-    * `includeAddresses` : `String[]` - _(Optional)_ Include certain additional addresses, regardless of balance or previous use.
     * `intentions` : `String[]` - _(Optional)_ Filter what addresses to return, e.g. "payment" or "ordinal".
 
 ### Returns

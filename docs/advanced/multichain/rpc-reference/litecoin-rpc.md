@@ -92,13 +92,14 @@ We recognize that there are two different kinds of wallets:
         * `path` : `String` - _(Optional)_ Derivation path of the address e.g. "m/84'/2'/0'/0/0".
         * `intention`: `String` - _(Optional)_ Intention of the address, e.g. "payment" or "ordinal".
 
-Wallets **should** always include the first external address and all addresses with one or more UTXOs, unless they're filtered by `intentions`.
+### Implementation Details
+1. Wallets **should** always include the first external address and all addresses with one or more UTXOs, unless they're filtered by `intentions`.
 
-Wallets **should** emit a `bip122_addressesChanged` event for every account and BIP122 chain ID, after connection approval and when changes are detected. The event data should have the same format as the `getAccountAddresses` result.
+2. Wallets **should** emit a `bip122_addressesChanged` event for every account and BIP122 chain ID, after connection approval and when changes are detected. The event data must have the same format as the `getAccountAddresses` result.
 
-Dynamic wallets **should** include minimum 2 unused change and receive addresses. Otherwise dapps may have to request [getAccountAddresses](#getAccountAddresses) after every transaction to discover the new addresses and keep track of the user's total balance.
+3. Dynamic wallets **should** include minimum 2 unused change and receive addresses. Otherwise dapps may have to request [getAccountAddresses](#getAccountAddresses) after every transaction to discover the new addresses and keep track of the user's total balance.
 
-Wallets **must** never return more than 20 unused addresses to avoid breaking the [gap limit](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit).
+4. Wallets **must** never return more than 20 unused change or receive addresses to avoid breaking the [gap limit](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit).
 
 ### Example: Dynamic Wallet
 The example below specifies a result from a dynamic wallet. For the sake of this example, receive and change addresses with index 3-4 are considered unused and addresses with paths m/49'/2'/0'/0/7 and m/84'/2'/0'/0/2 are considered to have UTXOs.

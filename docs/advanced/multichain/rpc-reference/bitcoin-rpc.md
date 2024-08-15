@@ -79,7 +79,7 @@ We recognize that there are two broad classes of wallets in use today:
 1. Wallets that generate a new change or receive address for every transaction ("dynamic wallet").
 2. Wallets that reuse the first external address for every transaction ("static wallet").
 
-Implementation details:
+#### Implementation Details
 * Wallets **should** always include the first external address and all addresses with one or more UTXOs, unless they're filtered by `intentions`.
 * Dynamic wallets **should** include minimum 2 unused change and receive addresses. Otherwise dapps may have to request [getAccountAddresses](#getAccountAddresses) after every transaction to discover the new addresses and keep track of the user's total balance.
 * Wallets **must** never return more than 20 unused change or receive addresses to avoid breaking the [gap limit](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit).
@@ -225,6 +225,7 @@ This method is used to sign a message with one of the connected account's addres
 ### bip122_addressesChanged
 This event is used by wallets to notify dapps about connected accounts' current addresses, for example all addresses with a UTXO and a few unused addresses. The event data has the same format as the [getAccountAddresses](#getaccountaddresses) result.
 
+#### Implementation Details
 * Wallets **should** emit a `bip122_addressesChanged` event immediately after connection approval of a BIP122 chain.
 * Wallets **should** emit a `bip122_addressesChanged` event whenever a UTXO is spent or created for a connected account's addresses.
 * Dapps **should** listen for `bip122_addressesChanged` events, collect and monitor all addresses for UTXO and balance changes.

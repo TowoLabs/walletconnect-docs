@@ -186,9 +186,23 @@ The example below specifies a response from a static wallet. The returned addres
 ```
 
 ## signPsbt
-This more advanced method is for use-cases involving multiple-recipient transactions, requiring granular control over which UTXOs to spend or how to route change.
+This method can be used to request the signature of a Partially Signed Bitcoin Transaction (PSBT) and covers use-cases e.g. involving multiple-recipient transactions, requiring granular control over which UTXOs to spend or how to route change.
 
-**TBD**
+### Parameters
+* `Object`
+    * `account` : `String` - _(Required)_ The connected account's first external address.
+    * `psbt` : `String` - _(Required)_ Base64 encoded string of the PSBT to sign.
+    * `signInputs` : `Array`
+        * `Object`
+            * `address` : `String` - _(Required)_ The address whose private key to use for signing.
+            * `index` : `Integer` - _(Required)_ Which input to sign.
+            * `sighashTypes` : `Integer[]` - _(Optional)_ Indicate which part of the transaction is signed with sighash types. Default is "[1]".
+    * `broadcast` : `Boolean` - _(Optional)_ Whether to broadcast the transaction after signing it. Default is `false`.
+
+### Returns
+* `Object`
+    * `psbt` : `String` - _(Required)_ The base64 encoded signed PSBT.
+    * `txid` : `String` - _(Optional)_ The transaction ID as a hex-encoded string, without 0x prefix. This must be returned if the transaction was broadcasted.
 
 ## signMessage
 This method is used to sign a message with one of the connected account's addresses.

@@ -8,7 +8,7 @@ We define an account as the group of addresses derived using the same account va
 1. Dapps **must** only display the first external address as a connected account.
 2. Wallets **must** only offer to connect the first external address(es).
 
-### Account Definition
+#### Account Definition
 The derivation path levels in the [BIP44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#path-levels), [BIP49](https://github.com/bitcoin/bips/blob/master/bip-0049.mediawiki#user-content-Public_key_derivation), [BIP84](https://github.com/bitcoin/bips/blob/master/bip-0084.mediawiki#public-key-derivation), [BIP86](https://github.com/bitcoin/bips/blob/master/bip-0086.mediawiki#user-content-Public_key_derivation) standards are: 
 ```
 m / purpose' / coin_type' / account' / change / address_index
@@ -79,6 +79,11 @@ We recognize that there are two broad classes of wallets in use today:
 1. Wallets that generate a new change or receive address for every transaction ("dynamic wallet").
 2. Wallets that reuse the first external address for every transaction ("static wallet").
 
+Implementation details:
+* Wallets **should** always include the first external address and all addresses with one or more UTXOs, unless they're filtered by `intentions`.
+* Dynamic wallets **should** include minimum 2 unused change and receive addresses. Otherwise dapps may have to request [getAccountAddresses](#getAccountAddresses) after every transaction to discover the new addresses and keep track of the user's total balance.
+* Wallets **must** never return more than 20 unused change or receive addresses to avoid breaking the [gap limit](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit).
+
 ### Parameters
 * `Object`
     * `account` : `String` - _(Required)_ The connected account's first external address.
@@ -91,13 +96,6 @@ We recognize that there are two broad classes of wallets in use today:
         * `publicKey` : `String` - _(Optional)_ Public key for the derivation path in hex, without 0x prefix.
         * `path` : `String` - _(Optional)_ Derivation path of the address e.g. "m/84'/2'/0'/0/0".
         * `intention` : `String` - _(Optional)_ Intention of the address, e.g. "payment" or "ordinal".
-
-### Implementation Details
-1. Wallets **should** always include the first external address and all addresses with one or more UTXOs, unless they're filtered by `intentions`.
-
-2. Dynamic wallets **should** include minimum 2 unused change and receive addresses. Otherwise dapps may have to request [getAccountAddresses](#getAccountAddresses) after every transaction to discover the new addresses and keep track of the user's total balance.
-
-3. Wallets **must** never return more than 20 unused change or receive addresses to avoid breaking the [gap limit](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit).
 
 ### Example: Dynamic Wallet
 The example below specifies a result from a dynamic wallet. For the sake of this example, receive and change addresses with index 3-4 are considered unused and addresses with paths m/49'/2'/0'/0/7 and m/84'/2'/0'/0/2 are considered to have UTXOs.

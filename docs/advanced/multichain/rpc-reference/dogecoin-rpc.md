@@ -177,8 +177,8 @@ This method can be used to request the signature of a Partially Signed Bitcoin T
     * `signInputs` : `Array`
         * `Object`
             * `address` : `String` - _(Required)_ The address whose private key to use for signing.
-            * `index` : `Integer` - _(Required)_ Which input to sign.
-            * `sighashTypes` : `Integer[]` - _(Optional)_ Indicate which part of the transaction is signed with sighash types. Default is "[1]".
+            * `index` : `Integer` - _(Required)_ Specifies which input to sign.
+            * `sighashTypes` : `Integer[]` - _(Optional)_ Specifies which part of the transaction to sign. Default is `[1]`.
     * `broadcast` : `Boolean` - _(Optional)_ Whether to broadcast the transaction after signing it. Default is `false`.
 
 ### Returns

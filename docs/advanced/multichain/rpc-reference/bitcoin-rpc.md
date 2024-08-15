@@ -90,7 +90,7 @@ We recognize that there are two broad classes of wallets in use today:
         * `address` : `String` - _(Required)_ Public address belonging to the account.
         * `publicKey` : `String` - _(Optional)_ Public key for the derivation path in hex, without 0x prefix.
         * `path` : `String` - _(Optional)_ Derivation path of the address e.g. "m/84'/0'/0'/0/0".
-        * `intention`: `String` - _(Optional)_ Intention of the address, e.g. "payment" or "ordinal".
+        * `intention` : `String` - _(Optional)_ Intention of the address, e.g. "payment" or "ordinal".
 
 ### Implementation Details
 1. Wallets **should** always include the first external address and all addresses with one or more UTXOs, unless they're filtered by `intentions`.
@@ -193,20 +193,31 @@ This more advanced method is for use-cases involving multiple-recipient transact
 **TBD**
 
 ## signMessage
+This method is used to sign a message with one of the connected account's addresses.
 
-**TBD**
+### Parameters
+* `Object`
+    * `account` : `String` - _(Required)_ The connected account's first external address.
+    * `message` : `String` - _(Required)_ The message to be signed by the wallet.
+    * `address` : `String` - _(Optional)_ The Bitcoin address to use to sign the message.
+    * `protocol` : `"ecdsa" | "bip322"` - _(Optional)_ Preferred signature type. Default is "ecdsa".
+
+### Returns
+* `Object`
+    * `address` : `String` - _(Required)_ The Bitcoin address used to sign the message.
+    * `signature` : `String` - _(Required)_ Hex encoded bytes of the signature, without 0x prefix.
+    * `messageHash` : `String` - _(Optional)_ Hex encoded bytes of the message hash, without 0x prefix.
+
 
 ## Events
 ### bip122_addressesChanged
 This event is used by wallets to notify dapps about connected accounts' current addresses, for example all addresses with a UTXO and a few unused addresses. The event data has the same format as the [getAccountAddresses](#getaccountaddresses) result.
 
 * Wallets **should** emit a `bip122_addressesChanged` event immediately after connection approval of a BIP122 chain.
-
 * Wallets **should** emit a `bip122_addressesChanged` event whenever a UTXO is spent or created for a connected account's addresses.
-
 * Dapps **should** listen for `bip122_addressesChanged` events, collect and monitor all addresses for UTXO and balance changes.
 
-Example [session_event](https://specs.walletconnect.com/2.0/specs/clients/sign/session-events#session_event) payload as received by a dapp:
+#### Example [session_event](https://specs.walletconnect.com/2.0/specs/clients/sign/session-events#session_event) payload as received by a dapp:
 ```
 {
   "id": 1675759795769537,

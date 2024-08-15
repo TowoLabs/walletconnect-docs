@@ -71,11 +71,11 @@ The example below specifies a simple transfer of 1.23 LTC (123000000 Litoshi).
 ```
 
 ## getAccountAddresses
-This method returns all current addresses needed for a dapp to fetch all UTXOs, calculate the total balance and prepare transactions. No response can be expected until the user unlocks its wallet and approves the request. Dapps will typically use an indexing service to query for balances and UTXOs for all addresses returned by this method:
+This method returns all current addresses needed for a dapp to fetch all UTXOs, calculate the total balance and prepare transactions. Dapps will typically use an indexing service to query for balances and UTXOs for all addresses returned by this method, such as:
 * [Blockbook API](https://github.com/trezor/blockbook/blob/master/docs/api.md#get-address)
 * [Bitcore API](https://github.com/bitpay/bitcore/blob/master/packages/bitcore-node/docs/api-documentation.md#address)
 
-We recognize that there are two different kinds of wallets:
+We recognize that there are two broad classes of wallets in use today:
 1. Wallets that generate a new change or receive address for every transaction ("dynamic wallet").
 2. Wallets that reuse the first external address for every transaction ("static wallet").
 
@@ -95,16 +95,14 @@ We recognize that there are two different kinds of wallets:
 ### Implementation Details
 1. Wallets **should** always include the first external address and all addresses with one or more UTXOs, unless they're filtered by `intentions`.
 
-2. Wallets **should** emit a `bip122_addressesChanged` event for every account and BIP122 chain ID, after connection approval and when changes are detected. The event data must have the same format as the `getAccountAddresses` result.
+2. Dynamic wallets **should** include minimum 2 unused change and receive addresses. Otherwise dapps may have to request [getAccountAddresses](#getAccountAddresses) after every transaction to discover the new addresses and keep track of the user's total balance.
 
-3. Dynamic wallets **should** include minimum 2 unused change and receive addresses. Otherwise dapps may have to request [getAccountAddresses](#getAccountAddresses) after every transaction to discover the new addresses and keep track of the user's total balance.
-
-4. Wallets **must** never return more than 20 unused change or receive addresses to avoid breaking the [gap limit](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit).
+3. Wallets **must** never return more than 20 unused change or receive addresses to avoid breaking the [gap limit](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit).
 
 ### Example: Dynamic Wallet
 The example below specifies a result from a dynamic wallet. For the sake of this example, receive and change addresses with index 3-4 are considered unused and addresses with paths m/49'/2'/0'/0/7 and m/84'/2'/0'/0/2 are considered to have UTXOs.
 
-Assuming the dapp monitors all returned addresses for balance changes, a new request to `getAccountAddresses` is only needed when all UTXOs have been spent, all unused receive or all unused change addresses have been used.
+Assuming the dapp monitors all returned addresses for balance changes, a new request to `getAccountAddresses` is only needed when all UTXOs in provided addresses have been spent, or when all provided `receive` addresses or `change` addresses have been used.
 
 ```javascript
 // Request
@@ -182,10 +180,64 @@ The example below specifies a response from a static wallet. The returned addres
 ```
 
 ## signPsbt
-This method is for use-cases requiring granular control over what UTXOs to spend or requiring more than a single recipient, change or OP_RETURN output.
+This more advanced method is for use-cases involving multiple-recipient transactions, requiring granular control over which UTXOs to spend or how to route change.
 
 **TBD**
 
 ## signMessage
 
 **TBD**
+
+## Events
+### bip122_addressesChanged
+This event is used by wallets to notify dapps about connected accounts' current addresses, for example all addresses with a UTXO and a few unused addresses. The event data has the same format as the [getAccountAddresses](#getaccountaddresses) result.
+
+* Wallets **should** emit a `bip122_addressesChanged` event for every requested BIP122 chain ID, immediately after connection approval.
+
+* Wallets **should** emit a `bip122_addressesChanged` event for the related BIP122 chain ID, immediately after a UTXO is spent or received.
+
+* Dapps **should** listen for `bip122_addressesChanged` events and monitor all received addresses for balance changes.
+
+Example [session_event](https://specs.walletconnect.com/2.0/specs/clients/sign/session-events#session_event) payload as received by a dapp:
+```
+{
+  "id": 1675759795769537,
+  "topic": "95d6aca451b8e3c6d9d176761bf786f1cc0a6d38dffd31ed896306bb37f6ae8d",
+  "params": {
+    "event": {
+      "name": "bip122_addressesChanged",
+      "data": [
+        {
+            "address": "ltc1q8c6fshw2dlwun7ekn9qwf37cu2rn755u9ym7p0",
+            "path": "m/84'/2'/0'/0/0"
+        },
+        {
+            "address": "LXkGhTKmZpviAtYdDaxWbiJsdg4tA6EzrU",
+            "path": "m/49'/2'/0'/0/7"
+        },
+        {
+            "address": "ltc1qj4plcuyhuzw0sycf99gcayzhhcddfj6xkcke5g",
+            "path": "m/84'/2'/0'/0/2"
+        },
+        {
+            "address": "ltc1qsdxa6pseqekqg5d3uksaxnwrey2s2ujcx03alc",
+            "path": "m/84'/2'/0'/0/3"
+        },
+        {
+            "address": "ltc1qhuvt3sq8xmx9ktzdfznkzvjl5zup7mg9zpwllw",
+            "path": "m/84'/2'/0'/0/4"
+        },
+        {
+            "address": "ltc1qtjd3y5a2axpwzfjcj4y9zy50qfjuxwzm0vu5fq",
+            "path": "m/84'/2'/0'/1/3"
+        },
+        {
+            "address": "ltc1qp7ujtprgl0quvcg0dj335p37r2mc2cxdc8xumq",
+            "path": "m/84'/2'/0'/1/4"
+        }
+      ]
+    },
+    "chainId": "bip122:12a765e31ffd4059bada1e25190f6e98"
+  }
+}
+```

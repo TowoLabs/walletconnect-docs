@@ -203,8 +203,8 @@ This method is used to sign a message with one of the connected account's addres
 * `Object`
     * `account` : `String` - _(Required)_ The connected account's first external address.
     * `message` : `String` - _(Required)_ The message to be signed by the wallet.
-    * `address` : `String` - _(Optional)_ The Litecoin address to use to sign the message.
-    * `protocol` : `"ecdsa" | "bip322"` - _(Optional)_ Preferred signature type. Default is "ecdsa".
+    * `address` : `String` - _(Optional)_ The address whose private key to use for signing the message.
+    * `protocol` : `"ecdsa" | "bip322"` - _(Optional)_ Preferred signature type. Default is `"ecdsa"`.
 
 ### Returns
 * `Object`

@@ -29,7 +29,7 @@ If the wallet user changes to account 1 we get path `m/84'/0'/1'/0/0` with ident
 * `m/86'/0'/1'/change/address_index`
 
 ## sendTransfer
-This method is used to sign and submit a transfer of any `amount` of Bitcoin to a single `recipientAddress`, optionally including a `changeAddress` for the change amount and `memo` set as an OP_RETURN output by supporting wallets. The transaction will be signed and broadcasted upon user approval.
+This method is used to sign and submit a transfer of any `amount` of Bitcoin to a single `recipientAddress`, optionally including a `changeAddress` for the change amount and `memo` set as an OP_RETURN output by supporting wallets. The transaction will be signed and broadcast upon user approval.
 
 ### Parameters
 * `Object`

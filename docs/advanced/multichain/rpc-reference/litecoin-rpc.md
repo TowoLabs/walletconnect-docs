@@ -29,7 +29,7 @@ If the wallet user changes to account 1 we get path `m/84'/2'/1'/0/0` with ident
 * `m/86'/2'/1'/change/address_index`
 
 ## sendTransfer
-This method is used to sign and submit a transfer of any `amount` of Litecoin to a single `recipientAddress`, optionally including a `changeAddress` for the change amount and `memo` set as the OP_RETURN value by supporting wallets. The transaction will be signed and broadcasted upon user approval.
+This method is used to sign and submit a transfer of any `amount` of Litecoin to a single `recipientAddress`, optionally including a `changeAddress` for the change amount and `memo` set as the OP_RETURN value by supporting wallets. The transaction will be signed and broadcast upon user approval.
 
 ### Parameters
 * `Object`
@@ -98,7 +98,7 @@ We recognize that there are two broad classes of wallets in use today:
         * `intention` : `String` - _(Optional)_ Intention of the address, e.g. "payment" or "ordinal".
 
 ### Example: Dynamic Wallet
-The example below specifies a result from a dynamic wallet. For the sake of this example, receive and change addresses with index 3-4 are considered unused and addresses with paths m/49'/2'/0'/0/7 and m/84'/2'/0'/0/2 are considered to have UTXOs.
+The example below specifies a result from a dynamic wallet. For the sake of this example, receive and change addresses with index 3-4 are considered unused and addresses with paths `m/49'/2'/0'/0/7` and `m/84'/2'/0'/0/2` are considered to have UTXOs.
 
 Assuming the dapp monitors all returned addresses for balance changes, a new request to `getAccountAddresses` is only needed when all UTXOs in provided addresses have been spent, or when all provided `receive` addresses or `change` addresses have been used.
 

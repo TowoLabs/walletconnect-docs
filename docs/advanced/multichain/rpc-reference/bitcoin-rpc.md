@@ -82,7 +82,7 @@ We recognize that there are two broad classes of wallets in use today:
 #### Implementation Details
 * All wallets **should** include the first external address and all addresses with one or more UTXOs, unless they're filtered by `intentions`.
 * Dynamic wallets **should** include minimum 2 unused change and receive addresses. Otherwise dapps may have to request [getAccountAddresses](#getAccountAddresses) after every transaction to discover the new addresses and keep track of the user's total balance.
-* All wallets **must** return fewer than 20 unused change or receive addresses to avoid breaking the [gap limit](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit).
+* All wallets **must** return fewer than 20 unused change and receive addresses to avoid breaking the [gap limit](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit).
 
 ### Parameters
 * `Object`
